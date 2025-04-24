@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Entry/Exit Date Picker</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div class="dropdown-container">
+    <!-- Entry Dropdown -->
+    <div class="dropdown" id="entryDropdown">
+      <div class="dropdown-label">Entry At</div>
+      <div class="dropdown-content" id="entryDropdownContent">
+        <div class="date-part">
+          <div class="date-row">
+            <div class="day" id="entryDay">24</div>
+            <div class="date-details">
+              <div class="month-year" id="entryMonthYear">April 2025</div>
+              <div class="time" id="entryTime">4:15 PM</div>
+            </div>
+          </div>
+        </div>
+        <div class="dropdown-arrow">▼</div>
+      </div>
+      
+      <!-- Date Picker for Entry -->
+      <div class="datepicker-container" id="entryDatepicker">
+        <div class="calendar-header">
+          <button class="month-nav" id="entryPrevMonth">‹</button>
+          <h2 id="entryMonthLabel">April 2025</h2>
+          <button class="month-nav" id="entryNextMonth">›</button>
+        </div>
+        
+        <div class="calendar-grid" id="entryCalendarDays">
+          <div class="weekday">Mon</div>
+          <div class="weekday">Tue</div>
+          <div class="weekday">Wed</div>
+          <div class="weekday">Thu</div>
+          <div class="weekday">Fri</div>
+          <div class="weekday">Sat</div>
+          <div class="weekday">Sun</div>
+          <!-- Calendar days will be inserted here by JavaScript -->
+        </div>
+        
+        <div class="ok-button">
+          <button id="entryOkButton">OK</button>
+        </div>
+      </div>
+      
+      <!-- Time selector container - positioned dynamically -->
+      <div class="time-selector-container" id="entryTimeSelectorContainer">
+        <div class="time-selector-arrow" id="entryTimeSelectorArrow"></div>
+        <div class="time-selector">
+          <div class="time-selector-row">
+            <label>Hour:</label>
+            <select id="entryHour">
+              <option value="01">01</option>
+              <option value="02">02</option>
+              <option value="03">03</option>
+              <option value="04" selected>04</option>
+              <option value="05">05</option>
+              <option value="06">06</option>
+              <option value="07">07</option>
+              <option value="08">08</option>
+              <option value="09">09</option>
+              <option value="10">10</option>
+              <option value="11">11</option>
+              <option value="12">12</option>
+            </select>
+            
+            <label>Minute:</label>
+            <select id="entryMinute">
+              <option value="00">00</option>
+              <option value="15" selected>15</option>
+              <option value="30">30</option>
+              <option value="45">45</option>
+            </select>
+            
+            <select id="entryAmPm">
+              <option value="AM">AM</option>
+              <option value="PM" selected>PM</option>
+            </select>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Exit Dropdown -->
+    <div class="dropdown" id="exitDropdown">
+      <div class="dropdown-label">Exit At</div>
+      <div class="dropdown-content" id="exitDropdownContent">
+        <div class="date-part">
+          <div class="date-row">
+            <div class="day" id="exitDay">25</div>
+            <div class="date-details">
+              <div class="month-year" id="exitMonthYear">April 2025</div>
+              <div class="time" id="exitTime">4:15 PM</div>
+            </div>
+          </div>
+        </div>
+        <div class="dropdown-arrow">▼</div>
+      </div>
+      
+      <!-- Date Picker for Exit -->
+      <div class="datepicker-container" id="exitDatepicker">
+        <div class="calendar-header">
+          <button class="month-nav" id="exitPrevMonth">‹</button>
+          <h2 id="exitMonthLabel">April 2025</h2>
+          <button class="month-nav" id="exitNextMonth">›</button>
+        </div>
+        
+        <div class="calendar-grid" id="exitCalendarDays">
+          <div class="weekday">Mon</div>
+          <div class="weekday">Tue</div>
+          <div class="weekday">Wed</div>
+          <div class="weekday">Thu</div>
+          <div class="weekday">Fri</div>
+          <div class="weekday">Sat</div>
+          <div class="weekday">Sun</div>
+          <!-- Calendar days will be inserted here by JavaScript -->
+        </div>
+        
+        <div class="ok-button">
+          <button id="exitOkButton">OK</button>
+        </div>
+      </div>
+      
+      <!-- Time selector container - positioned dynamically -->
+      <div class="time-selector-container" id="exitTimeSelectorContainer">
+        <div class="time-selector-arrow" id="exitTimeSelectorArrow"></div>
+        <div class="time-selector">
+          <div class="time-selector-row">
+            <label>Hour:</label>
+            <select id="exitHour">
+              <option value="01">01</option>
+              <option value="02">02</option>
+              <option value="03">03</option>
+              <option value="04" selected>04</option>
+              <option value="05">05</option>
+              <option value="06">06</option>
+              <option value="07">07</option>
+              <option value="08">08</option>
+              <option value="09">09</option>
+              <option value="10">10</option>
+              <option value="11">11</option>
+              <option value="12">12</option>
+            </select>
+            
+            <label>Minute:</label>
+            <select id="exitMinute">
+              <option value="00">00</option>
+              <option value="15" selected>15</option>
+              <option value="30">30</option>
+              <option value="45">45</option>
+            </select>
+            
+            <select id="exitAmPm">
+              <option value="AM">AM</option>
+              <option value="PM" selected>PM</option>
+            </select>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/main.js"></script>
+
+</body>
+</html>
