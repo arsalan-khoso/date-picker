@@ -222,100 +222,149 @@ function addDayCell(container, day, type, isOtherMonth, date) {
 function positionTimeSelector(type, cell) {
   // Get the cell coordinates and dimensions
   const cellRect = cell.getBoundingClientRect();
-  const datepickerRect = document.getElementById(`${type}Datepicker`).getBoundingClientRect();
-  
+  const calendarDays = document.getElementById(`${type}CalendarDays`);
+  const calendarRect = calendarDays.getBoundingClientRect();
 
-  // Get the time selector
+  // Get the time selector and measure its height
   const timeSelector = document.getElementById(`${type}TimeSelectorContainer`);
   const timeSelectorArrow = timeSelector.querySelector('.time-selector-arrow');
   
+  // Temporarily show the selector to get its dimensions, but make it invisible
+  timeSelector.style.display = 'block';
+  timeSelector.style.visibility = 'hidden';
+  const timeSelectorHeight = timeSelector.offsetHeight;
+  
   // Calculate the row this cell is in
-  const cells = Array.from(document.getElementById(`${type}CalendarDays`).querySelectorAll('.day-cell'));
+  const cells = Array.from(calendarDays.querySelectorAll('.day-cell'));
   const index = cells.indexOf(cell);
   const row = Math.floor(index / 7);
   const lastRowIndex = Math.floor((cells.length - 1) / 7);
   
-  // Check if we're on mobile
-  const isMobile = window.innerWidth <= 768;
-  const smallMobile = window.innerWidth<=400;
-  if (type=='entry'){
-    if (isMobile) {
-      // For mobile views, position the time selector exactly 30px below the cell
-      timeSelector.style.top = `${cellRect.bottom - datepickerRect.top -54}px`;
-      if (row === lastRowIndex) {
-        timeSelector.style.top = `${cellRect.top - datepickerRect.top - timeSelector.offsetHeight+15}px`;
-      }
-      
-    } 
-    
-    else {
-      // Desktop positioning logic
-      if (row === lastRowIndex) {
-        // If it's the last row, place the time selector above with exact 30px distance
-        timeSelector.style.top = `${cellRect.top - datepickerRect.top - timeSelector.offsetHeight +100}px`; 
-      } else {
-        // Normal case - place time selector exactly 30px below the cell
-        timeSelector.style.top = `${cellRect.bottom - datepickerRect.top + 45}px`;
-      }
-    }
-
-    if (smallMobile) {
-        // For mobile views, position the time selector exactly 30px below the cell
-        timeSelector.style.top = `${cellRect.bottom - datepickerRect.top -62}px`;
-        if (row === lastRowIndex) {
-        
-        timeSelector.style.top = `${cellRect.top - datepickerRect.top - timeSelector.offsetHeight+2}px`;
-        }
-        
-      }  
-  }       
+  // Get current viewport width
+  const viewportWidth = window.innerWidth;
+  const viewportHeight = window.innerHeight;
   
-  else{
-
-    if (isMobile) {
-      // For mobile views, position the time selector exactly 30px below the cell
-      timeSelector.style.top = `${cellRect.bottom - datepickerRect.top -140}px`;
-      if (row === lastRowIndex) {
-        timeSelector.style.top = `${cellRect.top - datepickerRect.top - timeSelector.offsetHeight-80}px`;
-      }
-      
-    } 
+  // Get screen size category
+  let screenSize;
+  if (viewportWidth <= 360) screenSize = 'xs'; // Extra small phones
+  else if (viewportWidth === 375) screenSize = 'sm375'; // Exact 375px width devices (like iPhone SE)
+  else if (viewportWidth < 480) screenSize = 'sm'; // Small phones
+  else if (viewportWidth <= 768) screenSize = 'md'; // Medium phones
+  else if (viewportWidth < 992) screenSize = 'lg'; // Large phones/small tablets
+  else if (viewportWidth < 1200) screenSize = 'xl'; // Tablets
+  else screenSize = 'xxl'; // Large tablets/desktops
+  
+  // Responsive offset values based on screen size category
+  const offsets = {
+    'xs': {
+      entry: { normal: 1, lastRow: 100 },
+      exit: { normal: -80, lastRow: 20 }
+    },
     
-    else {
-      // Desktop positioning logic
-      if (row === lastRowIndex) {
-        // If it's the last row, place the time selector above with exact 30px distance
-        timeSelector.style.top = `${cellRect.top - datepickerRect.top - timeSelector.offsetHeight +100}px`; 
-      } else {
-        // Normal case - place time selector exactly 30px below the cell
-        timeSelector.style.top = `${cellRect.bottom - datepickerRect.top + 45}px`;
-      }
-
-      if (smallMobile) {
-        // For mobile views, position the time selector exactly 30px below the cell
-        timeSelector.style.top = `${cellRect.bottom - datepickerRect.top -63}px`;
-        if (row === lastRowIndex) {
-        
-        timeSelector.style.top = `${cellRect.top - datepickerRect.top - timeSelector.offsetHeight+2}px`;
-        }
-      }
+    'sm': {
+      entry: { normal: 16, lastRow: 116 },
+      exit: { normal: -63, lastRow: 35 }
+    },
+    'sm375': {
+      entry: { normal: -6, lastRow: 92 }, // Adjust these values as needed
+      exit: { normal: -85, lastRow: 12 }, // Adjust these values as needed
+    },
+    'md': {
+      entry: { normal: 40, lastRow: 140 },
+      exit: { normal: -44, lastRow: 50 }
+    },
+    'lg': {
+      entry: { normal: 100, lastRow: 195 },
+      exit: { normal: 100, lastRow: 195 }
+    },
+    'xl': {
+      entry: { normal: 100, lastRow: 195 },
+      exit: { normal: 100, lastRow: 195 }
+    },
+    'xxl': {
+      entry: { normal: 100, lastRow: 195 }, // Desktop values
+      exit: { normal: 100, lastRow: 195 }
     }
-
-    
-
-
+  };
+  
+  // Get offset values based on screen size, selector type, and row position
+  const selectorType = type || 'entry';
+  const rowPosition = row === lastRowIndex ? 'lastRow' : 'normal';
+  const topOffset = offsets[screenSize][selectorType][rowPosition];
+  
+  // Calculate position relative to the calendar (parent container)
+  const relativeToCalendar = {
+    top: cellRect.top - calendarRect.top,
+    bottom: cellRect.bottom - calendarRect.top,
+    left: cellRect.left - calendarRect.left,
+    width: cellRect.width
+  };
+  
+  // Adjust position based on whether it's the last row or not
+  if (row === lastRowIndex) {
+    // Position above for last row
+    timeSelector.style.top = `${relativeToCalendar.top - timeSelectorHeight + topOffset}px`;
+    timeSelectorArrow.classList.add('pointing-down');
+    timeSelectorArrow.classList.remove('pointing-up');
+  } else {
+    // Position below for other rows
+    timeSelector.style.top = `${relativeToCalendar.bottom + topOffset}px`;
+    timeSelectorArrow.classList.add('pointing-up');
+    timeSelectorArrow.classList.remove('pointing-down');
   }
-
   
-  
-  // Center the arrow exactly under/above the selected date cell
-  const arrowLeftPosition = cellRect.left + (cellRect.width / 2) - datepickerRect.left;
+  // Center the arrow under the cell
+  const arrowLeftPosition = relativeToCalendar.left + (relativeToCalendar.width / 2);
   timeSelectorArrow.style.left = `${arrowLeftPosition}px`;
-  timeSelectorArrow.style.transform = 'translateX(-50%)'; // Fix it to consistent -50%
+  timeSelectorArrow.style.transform = 'translateX(-50%)';
   
-  // Show the time selector
-  timeSelector.style.display = 'block';
+  // Add responsive class based on screen size
+  timeSelector.classList.remove('xs', 'sm', 'md', 'lg', 'xl', 'xxl');
+  timeSelector.classList.add(screenSize);
+  
+  // Add additional classes for better styling hooks
+  timeSelector.classList.toggle('last-row', row === lastRowIndex);
+  timeSelector.classList.toggle('portrait', viewportHeight > viewportWidth);
+  timeSelector.classList.toggle('landscape', viewportWidth > viewportHeight);
+  
+  // Make time selector visible again
+  timeSelector.style.visibility = 'visible';
+  
+  // Log positioning for debugging
+  console.log(`Positioning time selector for ${screenSize} screen:`, {
+    viewport: { width: viewportWidth, height: viewportHeight },
+    offset: topOffset,
+    position: timeSelector.style.top,
+    row: row,
+    isLastRow: row === lastRowIndex,
+    orientation: viewportHeight > viewportWidth ? 'portrait' : 'landscape'
+  });
 }
+
+// Debounce function to prevent excessive recalculations during resize
+function debounce(func, wait) {
+  let timeout;
+  return function() {
+    const context = this;
+    const args = arguments;
+    clearTimeout(timeout);
+    timeout = setTimeout(() => {
+      func.apply(context, args);
+    }, wait);
+  };
+}
+
+// Handle window resize for responsive adjustments
+window.addEventListener('resize', debounce(() => {
+  // Find currently selected cell and reposition if visible
+  const activeCell = document.querySelector('.day-cell.selected');
+  const visibleTimeSelector = document.querySelector('[id$="TimeSelectorContainer"][style*="display: block"]');
+  
+  if (activeCell && visibleTimeSelector) {
+    const type = visibleTimeSelector.id.includes('entry') ? 'entry' : 'exit';
+    positionTimeSelector(type, activeCell);
+  }
+}, 150));
 
 
 
